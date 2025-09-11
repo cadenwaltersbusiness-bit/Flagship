@@ -63,7 +63,7 @@ const tabContents = document.querySelectorAll('.tab-content') as NodeListOf<HTML
 
 // Live View Elements
 const liveViewButton = document.getElementById('live-view-btn') as HTMLButtonElement;
-const liveViewPopup = document.getElementById('live-view-popup') as HTMLDivElement;
+const liveViewPopup = document.getElementById('floating-screen-window') as HTMLDivElement;
 const closeLiveViewButton = document.getElementById('close-live-view') as HTMLButtonElement;
 const liveTabButtons = document.querySelectorAll('.popup-tab') as NodeListOf<HTMLButtonElement>;
 const liveContents = document.querySelectorAll('.live-content') as NodeListOf<HTMLDivElement>;
