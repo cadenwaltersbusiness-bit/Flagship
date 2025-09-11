@@ -74,6 +74,7 @@ const createWindow = () => {
       nodeIntegration: false,
       webviewTag: true, // Enable webview tag
       sandbox: false, // Disable sandbox for preload script
+      webSecurity: false, // Disable web security for development
     },
   });
 

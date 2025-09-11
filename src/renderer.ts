@@ -57,6 +57,23 @@ const pythonCommandDisplay = document.getElementById('python-command') as HTMLDi
 const chromeCommandDisplay = document.getElementById('chrome-command') as HTMLDivElement;
 const actionRows = document.querySelectorAll('.action-row') as NodeListOf<HTMLDivElement>;
 
+// New Navigation Elements
+const navButtons = document.querySelectorAll('.nav-button') as NodeListOf<HTMLButtonElement>;
+const tabContents = document.querySelectorAll('.tab-content') as NodeListOf<HTMLDivElement>;
+
+// Live View Elements
+const liveViewButton = document.getElementById('live-view-btn') as HTMLButtonElement;
+const liveViewPopup = document.getElementById('live-view-popup') as HTMLDivElement;
+const closeLiveViewButton = document.getElementById('close-live-view') as HTMLButtonElement;
+const liveTabButtons = document.querySelectorAll('.popup-tab') as NodeListOf<HTMLButtonElement>;
+const liveContents = document.querySelectorAll('.live-content') as NodeListOf<HTMLDivElement>;
+const liveConsoleContent = document.getElementById('live-console-content') as HTMLDivElement;
+const liveChromeConsoleContent = document.getElementById('live-chrome-console-content') as HTMLDivElement;
+
+// Settings Elements
+const temperatureSlider = document.getElementById('temperature') as HTMLInputElement;
+const temperatureValue = document.querySelector('.slider-value') as HTMLSpanElement;
+
 // Variables to track loading
 let progressValue = 0;
 let progressInterval: number | null = null;
@@ -97,20 +114,104 @@ function completeProgress(): void {
   }, 500);
 }
 
-// Toggle console visibility
-function toggleConsole(): void {
-  // Use classList to toggle visibility
-  const isConsoleVisible = consoleOutput.classList.contains('visible');
+// Function to switch between navigation tabs
+function switchTab(tabName: string): void {
+  // Update navigation buttons
+  navButtons.forEach(button => {
+    button.classList.remove('active');
+    if (button.getAttribute('data-tab') === tabName) {
+      button.classList.add('active');
+    }
+  });
+
+  // Update tab content
+  tabContents.forEach(content => {
+    content.classList.remove('active');
+    if (content.id === `tab-${tabName}`) {
+      content.classList.add('active');
+    }
+  });
+}
+
+// Function to switch between Live View tabs
+function switchLiveViewTab(tabName: string): void {
+  // Update popup tab buttons
+  liveTabButtons.forEach(button => {
+    button.classList.remove('active');
+    if (button.id === `live-tab-${tabName}`) {
+      button.classList.add('active');
+    }
+  });
+
+  // Update live content
+  liveContents.forEach(content => {
+    content.classList.remove('active');
+    if (content.id === `live-${tabName}-content`) {
+      content.classList.add('active');
+    }
+  });
+}
+
+// Function to toggle Live View popup
+function toggleLiveView(): void {
+  const isVisible = liveViewPopup.classList.contains('visible');
   
-  if (isConsoleVisible) {
-    consoleOutput.classList.remove('visible');
-    toggleConsoleButton.textContent = 'Show Console';
+  if (isVisible) {
+    liveViewPopup.classList.remove('visible');
   } else {
-    consoleOutput.classList.add('visible');
-    toggleConsoleButton.textContent = 'Hide Console';
-    // Scroll to the latest output
-    const activeTab = tabPython.classList.contains('active') ? consoleContent : chromeConsoleContent;
-    activeTab.scrollTop = activeTab.scrollHeight;
+    liveViewPopup.classList.add('visible');
+    // Scroll to latest output when opening
+    const activeContent = document.querySelector('.live-content.active .console-content') as HTMLElement;
+    if (activeContent) {
+      activeContent.scrollTop = activeContent.scrollHeight;
+    }
+  }
+}
+
+// Function to append output to live view consoles
+function appendToLiveView(message: string, type: string, isChrome = false): void {
+  const targetContent = isChrome ? liveChromeConsoleContent : liveConsoleContent;
+  const element = document.createElement('div');
+  element.className = type;
+  element.textContent = message;
+  targetContent.appendChild(element);
+  targetContent.scrollTop = targetContent.scrollHeight;
+  
+  // Limit the number of lines to prevent memory issues
+  const maxLines = 1000;
+  const lines = targetContent.children;
+  if (lines.length > maxLines) {
+    for (let i = 0; i < lines.length - maxLines; i++) {
+      lines[0].remove();
+    }
+  }
+}
+
+// Function to update settings sliders
+function updateSliderValue(slider: HTMLInputElement, valueSpan: HTMLSpanElement): void {
+  valueSpan.textContent = slider.value;
+}
+
+// Function to load webview in background (keeping original behavior)
+function loadWebViewBackground(url: string): void {
+  const webviewElement = document.querySelector('webview') as Electron.WebviewTag;
+  if (webviewElement) {
+    webviewElement.src = url;
+    
+    webviewElement.addEventListener('dom-ready', () => {
+      console.log('WebView DOM ready');
+    });
+    
+    webviewElement.addEventListener('did-finish-load', () => {
+      console.log('WebView finished loading');
+      document.body.classList.remove('loading');
+    });
+    
+    webviewElement.addEventListener('did-fail-load', (e) => {
+      console.error('WebView failed to load:', e);
+      appendToConsole(`Failed to load webview: ${JSON.stringify(e)}`, 'error');
+      appendToLiveView(`Failed to load webview: ${JSON.stringify(e)}`, 'error');
+    });
   }
 }
 
@@ -139,45 +240,20 @@ function switchConsoleTab(tab: 'python' | 'chrome'): void {
 
 // Function to load the web UI
 function loadWebUI(url: string): void {
-  // Force the correct type for webview element
-  const webviewElement = document.querySelector('webview') as Electron.WebviewTag;
-  if (webviewElement) {
-    webviewElement.src = url;
-    
-    // Handle webview events
-    webviewElement.addEventListener('dom-ready', () => {
-      console.log('WebView DOM ready');
-    });
-    
-    webviewElement.addEventListener('did-start-loading', () => {
-      console.log('WebView started loading');
-    });
-    
-    webviewElement.addEventListener('did-finish-load', () => {
-      console.log('WebView finished loading');
-      // Remove loading class when webview is loaded
-      document.body.classList.remove('loading');
-    });
-    
-    webviewElement.addEventListener('did-fail-load', (e) => {
-      console.error('WebView failed to load:', e);
-      // Show error and console if webview fails to load
-      appendToConsole(`Failed to load webview: ${JSON.stringify(e)}`, 'error');
-      consoleOutput.classList.add('visible');
-      toggleConsoleButton.textContent = 'Hide Console';
-      // Scroll to the error
-      consoleContent.scrollTop = consoleContent.scrollHeight;
-    });
-  }
+  // Instead of showing webview, we keep our custom interface
+  // and load webview in background for data
+  loadWebViewBackground(url);
   
-  // Show the webview and controls, hide other elements
-  webviewContainer.style.display = 'block';
-  controls.style.display = 'block';
+  // Remove loading class to show main interface
+  document.body.classList.remove('loading');
+  
+  // Don't show webview container, keep our custom interface
+  // webviewContainer.style.display = 'block';
+  // controls.style.display = 'block';
+  
+  // Hide loading elements
   loadingContainer.style.display = 'none';
   launchButton.style.display = 'none';
-  
-  // Keep console visible until the UI fully loads, then hide it with a delay
-  // This is handled in the event listeners in the init function
 }
 
 // Initialize the app
@@ -185,30 +261,62 @@ function init(): void {
   // Start simulating progress
   simulateProgress();
   
-  // Show console automatically during loading
-  consoleOutput.classList.add('visible');
+  // Show our custom interface immediately (remove loading after server starts)
+  // Don't auto-show console anymore since we have Live View
   
-  // Set the command displays
-  pythonCommandDisplay.textContent = pythonCommand.display;
-  chromeCommandDisplay.textContent = chromeCommand.display;
+  // Set the command displays for backwards compatibility
+  if (pythonCommandDisplay) pythonCommandDisplay.textContent = pythonCommand.display;
+  if (chromeCommandDisplay) chromeCommandDisplay.textContent = chromeCommand.display;
+  
+  // Setup navigation
+  navButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const tabName = button.getAttribute('data-tab');
+      if (tabName) {
+        switchTab(tabName);
+      }
+    });
+  });
+  
+  // Setup Live View
+  if (liveViewButton) {
+    liveViewButton.addEventListener('click', toggleLiveView);
+  }
+  
+  if (closeLiveViewButton) {
+    closeLiveViewButton.addEventListener('click', () => {
+      liveViewPopup.classList.remove('visible');
+    });
+  }
+  
+  // Setup Live View tabs
+  liveTabButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const tabName = button.id.replace('live-tab-', '');
+      switchLiveViewTab(tabName);
+    });
+  });
+  
+  // Setup settings sliders
+  if (temperatureSlider && temperatureValue) {
+    temperatureSlider.addEventListener('input', () => {
+      updateSliderValue(temperatureSlider, temperatureValue);
+    });
+  }
   
   // Listen for Python process output
   window.pyBridge.onPyOutput((data) => {
     appendToConsole(data.data, data.type);
+    appendToLiveView(data.data, data.type, false);
     
     // Automatically detect when server is ready from the output
     if (data.data.includes('Server is ready') || data.data.includes('Running on http://')) {
       if (!serverUrl) {
         serverUrl = 'http://127.0.0.1:7788';
         appendToConsole(`Detected server is ready at: ${serverUrl}`, 'info');
+        appendToLiveView(`Detected server is ready at: ${serverUrl}`, 'info');
         completeProgress();
         loadWebUI(serverUrl);
-        
-        // Hide console after server is ready and web UI is loaded
-        setTimeout(() => {
-          consoleOutput.classList.remove('visible');
-          toggleConsoleButton.textContent = 'Show Console';
-        }, 1000); // Small delay to allow users to see the "Server is ready" message
       }
     }
   });
@@ -216,82 +324,105 @@ function init(): void {
   // Listen for Python process started event
   window.pyBridge.onPyStarted(() => {
     appendToConsole('Python process started', 'info');
+    appendToLiveView('Python process started', 'info');
   });
   
   // Listen for Python ready event
   window.pyBridge.onPyReady((url) => {
     serverUrl = url;
     appendToConsole(`Server is ready at: ${url}`, 'info');
+    appendToLiveView(`Server is ready at: ${url}`, 'info');
     completeProgress();
     // Automatically load the web UI
     loadWebUI(url);
-    
-    // Hide console after server is ready and web UI is loaded
-    setTimeout(() => {
-      consoleOutput.classList.remove('visible');
-      toggleConsoleButton.textContent = 'Show Console';
-    }, 1000); // Small delay to allow users to see the "Server is ready" message
   });
   
   // Listen for Chrome process output
   window.chromeBridge.onChromeOutput((data) => {
     appendToConsole(data.data, data.type, chromeConsoleContent);
+    appendToLiveView(data.data, data.type, true);
   });
   
   // Listen for Chrome process started event
   window.chromeBridge.onChromeStarted(() => {
     appendToConsole('Chrome process started', 'info', chromeConsoleContent);
+    appendToLiveView('Chrome process started', 'info', true);
   });
   
-  // Setup tab switching
-  tabPython.addEventListener('click', () => {
-    switchConsoleTab('python');
-    restartPythonButton.style.display = 'block';
-    restartChromeButton.style.display = 'none';
-  });
+  // Setup tab switching (backwards compatibility)
+  if (tabPython) {
+    tabPython.addEventListener('click', () => {
+      switchConsoleTab('python');
+      if (restartPythonButton) restartPythonButton.style.display = 'block';
+      if (restartChromeButton) restartChromeButton.style.display = 'none';
+    });
+  }
   
-  tabChrome.addEventListener('click', () => {
-    switchConsoleTab('chrome');
-    restartPythonButton.style.display = 'none';
-    restartChromeButton.style.display = 'block';
-  });
+  if (tabChrome) {
+    tabChrome.addEventListener('click', () => {
+      switchConsoleTab('chrome');
+      if (restartPythonButton) restartPythonButton.style.display = 'none';
+      if (restartChromeButton) restartChromeButton.style.display = 'block';
+    });
+  }
   
   // Setup restart buttons
-  restartPythonButton.addEventListener('click', () => {
-    // Clear console
-    consoleContent.innerHTML = '';
-    
-    // Add message about restart
-    appendToConsole('Restarting Python process...', 'info');
-    
-    // Restart the process
-    window.pyBridge.restartPython();
-  });
+  if (restartPythonButton) {
+    restartPythonButton.addEventListener('click', () => {
+      // Clear console
+      consoleContent.innerHTML = '';
+      liveConsoleContent.innerHTML = '';
+      
+      // Add message about restart
+      appendToConsole('Restarting Python process...', 'info');
+      appendToLiveView('Restarting Python process...', 'info');
+      
+      // Restart the process
+      window.pyBridge.restartPython();
+    });
+  }
   
-  restartChromeButton.addEventListener('click', () => {
-    // Clear console
-    chromeConsoleContent.innerHTML = '';
-    
-    // Add message about restart
-    appendToConsole('Restarting Chrome process...', 'info', chromeConsoleContent);
-    
-    // Restart the process
-    window.chromeBridge.restartChrome();
-  });
+  if (restartChromeButton) {
+    restartChromeButton.addEventListener('click', () => {
+      // Clear console
+      chromeConsoleContent.innerHTML = '';
+      liveChromeConsoleContent.innerHTML = '';
+      
+      // Add message about restart
+      appendToConsole('Restarting Chrome process...', 'info', chromeConsoleContent);
+      appendToLiveView('Restarting Chrome process...', 'info', true);
+      
+      // Restart the process
+      window.chromeBridge.restartChrome();
+    });
+  }
   
-  // Setup launch button click handler
-  launchButton.addEventListener('click', () => {
-    loadWebUI(serverUrl);
-  });
+  // Setup launch button click handler (backwards compatibility)
+  if (launchButton) {
+    launchButton.addEventListener('click', () => {
+      loadWebUI(serverUrl);
+    });
+  }
   
-  // Setup toggle console button
-  toggleConsoleButton.addEventListener('click', toggleConsole);
+  // Setup toggle console button (backwards compatibility)
+  if (toggleConsoleButton) {
+    toggleConsoleButton.addEventListener('click', () => {
+      // Show Live View instead of old console
+      toggleLiveView();
+    });
+  }
   
-  // Setup close console button
-  closeConsoleButton.addEventListener('click', () => {
-    consoleOutput.classList.remove('visible');
-    toggleConsoleButton.textContent = 'Show Console';
-  });
+  // Setup close console button (backwards compatibility)
+  if (closeConsoleButton) {
+    closeConsoleButton.addEventListener('click', () => {
+      if (consoleOutput) {
+        consoleOutput.classList.remove('visible');
+      }
+      if (toggleConsoleButton) {
+        toggleConsoleButton.textContent = 'Show Console';
+      }
+    });
+  }
 }
 
 // Initialize the app when the DOM is loaded
