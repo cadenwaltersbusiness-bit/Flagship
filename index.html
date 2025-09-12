@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Browser-Use Desktop</title>
+    <title>Noshi - Natural Action Agent Vessel</title>
     <style>
       * {
         box-sizing: border-box;
@@ -14,8 +14,8 @@
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         margin: 0;
         padding: 0;
-        background-color: #0d1117;
-        color: #e6edf3;
+        background-color: #ffffff;
+        color: #333333;
         height: 100vh;
         overflow: hidden;
       }
@@ -23,305 +23,165 @@
       /* App Layout */
       .app-layout {
         display: flex;
+        flex-direction: column;
         height: 100vh;
         width: 100vw;
-      }
-
-      /* Sidebar Navigation */
-      .sidebar {
-        width: 250px;
-        background-color: #161b22;
-        border-right: 1px solid #30363d;
-        display: flex;
-        flex-direction: column;
-        z-index: 100;
-      }
-
-      .sidebar-header {
-        padding: 20px;
-        border-bottom: 1px solid #30363d;
-      }
-
-      .sidebar-header h1 {
-        font-size: 16px;
-        font-weight: 600;
-        color: #f0f6fc;
-      }
-
-      .sidebar-nav {
-        flex: 1;
-        padding: 20px 0;
-      }
-
-      .nav-button {
-        width: 100%;
-        padding: 12px 20px;
-        background: none;
-        border: none;
-        color: #7d8590;
-        text-align: left;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-size: 14px;
-        transition: all 0.2s ease;
         position: relative;
       }
 
-      .nav-button:hover {
-        background-color: #21262d;
-        color: #e6edf3;
-      }
-
-      .nav-button.active {
-        background-color: #1f6feb;
-        color: #ffffff;
-      }
-
-      .nav-button.active::before {
-        content: '';
+      /* Header */
+      .header {
         position: absolute;
-        left: 0;
         top: 0;
-        bottom: 0;
-        width: 3px;
-        background-color: #1f6feb;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 20px 30px;
+        z-index: 100;
       }
 
-      .nav-icon {
-        font-size: 16px;
+      .brand {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .brand h1 {
+        font-size: 28px;
+        font-weight: 600;
+        color: #333333;
+        margin: 0;
+        line-height: 1;
+      }
+
+      .brand p {
+        font-size: 14px;
+        color: #666666;
+        margin: 4px 0 0 0;
+        font-weight: 400;
+      }
+
+      .status {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #666666;
+        font-size: 14px;
+      }
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: #ff4444;
       }
 
       /* Main Content */
       .main-content {
         flex: 1;
-        background-color: #0d1117;
-        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
         position: relative;
+        padding: 20px;
       }
 
-      /* Tab Content */
-      .tab-content {
-        display: none;
-        padding: 30px;
-        max-width: 1200px;
-      }
-
-      .tab-content.active {
-        display: block;
-      }
-
-      .tab-header {
-        margin-bottom: 30px;
-      }
-
-      .tab-header h2 {
-        font-size: 24px;
-        font-weight: 600;
-        color: #f0f6fc;
-        margin-bottom: 8px;
-      }
-
-      .tab-header p {
-        color: #7d8590;
-        font-size: 16px;
-      }
-
-      /* Dashboard Grid */
-      .dashboard-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 20px;
-      }
-
-      .dashboard-card {
-        background-color: #161b22;
-        border: 1px solid #30363d;
-        border-radius: 8px;
-        padding: 24px;
-      }
-
-      .dashboard-card h3 {
-        font-size: 18px;
-        font-weight: 600;
-        color: #f0f6fc;
-        margin-bottom: 8px;
-      }
-
-      .dashboard-card p {
-        color: #7d8590;
-        margin-bottom: 16px;
-      }
-
-      /* Settings Section */
-      .settings-section {
-        background-color: #161b22;
-        border: 1px solid #30363d;
-        border-radius: 8px;
-        padding: 24px;
-      }
-
-      .setting-group {
-        margin-bottom: 20px;
-      }
-
-      .setting-group label {
-        display: block;
-        font-size: 14px;
-        font-weight: 600;
-        color: #f0f6fc;
-        margin-bottom: 8px;
-      }
-
-      .setting-input,
-      .setting-select {
-        width: 100%;
-        padding: 8px 12px;
-        background-color: #21262d;
-        border: 1px solid #30363d;
-        border-radius: 6px;
-        color: #e6edf3;
-        font-size: 14px;
-      }
-
-      .setting-input:focus,
-      .setting-select:focus {
-        outline: none;
-        border-color: #1f6feb;
-        box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.1);
-      }
-
-      .setting-slider {
-        width: 100%;
-        margin-right: 12px;
-      }
-
-      .slider-value {
-        color: #7d8590;
-        font-size: 14px;
-        min-width: 40px;
-      }
-
-      .setting-checkbox {
-        margin-right: 8px;
-      }
-
-      .checkbox-label {
-        color: #7d8590;
-        font-size: 14px;
-      }
-
-      /* Buttons */
-      .btn-primary,
-      .btn-secondary,
-      .btn-small {
-        padding: 8px 16px;
-        border: none;
-        border-radius: 6px;
-        font-size: 14px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
-      }
-
-      .btn-primary {
-        background-color: #238636;
-        color: #ffffff;
-      }
-
-      .btn-primary:hover {
-        background-color: #2ea043;
-      }
-
-      .btn-secondary {
-        background-color: #21262d;
-        color: #f0f6fc;
-        border: 1px solid #30363d;
-      }
-
-      .btn-secondary:hover {
-        background-color: #30363d;
-      }
-
-      .btn-small {
-        padding: 4px 8px;
-        font-size: 12px;
-        background-color: #21262d;
-        color: #f0f6fc;
-        border: 1px solid #30363d;
-      }
-
-      /* History Section */
-      .history-section {
-        background-color: #161b22;
-        border: 1px solid #30363d;
-        border-radius: 8px;
-        padding: 24px;
-      }
-
-      .history-filters {
-        display: flex;
-        gap: 12px;
-        margin-bottom: 20px;
-        align-items: center;
-      }
-
-      .history-list {
-        max-height: 400px;
-        overflow-y: auto;
-      }
-
-      .history-item {
-        display: flex;
-        align-items: center;
-        padding: 12px;
-        border: 1px solid #30363d;
-        border-radius: 6px;
-        margin-bottom: 8px;
-        background-color: #0d1117;
-      }
-
-      .history-status {
-        width: 20px;
-        height: 20px;
+      /* Logo */
+      .logo {
+        width: 120px;
+        height: 120px;
+        border: 2px solid #333333;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-right: 12px;
-        font-size: 12px;
+        margin-bottom: 40px;
+        position: relative;
       }
 
-      .history-status.completed {
-        background-color: #238636;
+      .logo-icon {
+        font-size: 48px;
+        color: #333333;
+      }
+
+      /* Welcome Text */
+      .welcome-section {
+        text-align: center;
+        margin-bottom: 80px;
+      }
+
+      .welcome-title {
+        font-size: 48px;
+        font-weight: 600;
+        color: #333333;
+        margin-bottom: 20px;
+      }
+
+      .welcome-subtitle {
+        font-size: 18px;
+        color: #666666;
+        font-weight: 400;
+      }
+
+      /* Input Section */
+      .input-section {
+        position: absolute;
+        bottom: 60px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 600px;
+        padding: 0 20px;
+      }
+
+      .input-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+
+      .main-input {
+        width: 100%;
+        padding: 16px 20px;
+        padding-right: 60px;
+        border: 2px solid #e0e0e0;
+        border-radius: 30px;
+        font-size: 16px;
+        color: #333333;
+        background-color: #ffffff;
+        outline: none;
+        transition: border-color 0.2s ease;
+      }
+
+      .main-input:focus {
+        border-color: #333333;
+      }
+
+      .main-input::placeholder {
+        color: #999999;
+      }
+
+      .submit-button {
+        position: absolute;
+        right: 8px;
+        width: 40px;
+        height: 40px;
+        border: none;
+        border-radius: 50%;
+        background-color: #333333;
         color: #ffffff;
-      }
-
-      .history-details {
-        flex: 1;
-      }
-
-      .history-title {
-        font-weight: 500;
-        color: #f0f6fc;
-      }
-
-      .history-meta {
-        font-size: 12px;
-        color: #7d8590;
-      }
-
-      .history-actions {
+        cursor: pointer;
         display: flex;
-        gap: 8px;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.2s ease;
       }
 
-      /* Tools Actions */
-      .tools-actions {
-        display: flex;
-        gap: 12px;
-        margin-top: 20px;
+      .submit-button:hover {
+        background-color: #555555;
       }
 
       /* Live View Button */
@@ -330,9 +190,9 @@
         bottom: 20px;
         left: 20px;
         z-index: 1000;
-        background-color: #1f6feb;
-        color: #ffffff;
-        border: none;
+        background-color: #f5f5f5;
+        color: #333333;
+        border: 1px solid #e0e0e0;
         border-radius: 8px;
         padding: 12px 16px;
         font-size: 14px;
@@ -341,594 +201,267 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         transition: all 0.2s ease;
       }
 
       .live-view-button:hover {
-        background-color: #0969da;
+        background-color: #eeeeee;
         transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       }
 
-      .live-indicator {
-        width: 8px;
-        height: 8px;
-        background-color: #238636;
-        border-radius: 50%;
-        animation: pulse 2s infinite;
-      }
-
-      @keyframes pulse {
-        0% { opacity: 1; }
-        50% { opacity: 0.5; }
-        100% { opacity: 1; }
-      }
-
-      /* Live View Popup */
-      .live-view-popup {
+      /* Navigation Overlay */
+      .nav-overlay {
         position: fixed;
-        bottom: 80px;
-        left: 20px;
-        width: 600px;
-        height: 400px;
-        background-color: #161b22;
-        border: 1px solid #30363d;
-        border-radius: 8px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-        z-index: 1001;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        z-index: 2000;
         display: none;
-        flex-direction: column;
-      }
-
-      .live-view-popup.visible {
-        display: flex;
-      }
-
-      .popup-header {
-        display: flex;
         align-items: center;
-        justify-content: space-between;
-        padding: 16px 20px;
-        border-bottom: 1px solid #30363d;
-        background-color: #21262d;
-        border-radius: 8px 8px 0 0;
+        justify-content: center;
       }
 
-      .popup-header h3 {
-        font-size: 16px;
-        font-weight: 600;
-        color: #f0f6fc;
-      }
-
-      .popup-tabs {
+      .nav-overlay.visible {
         display: flex;
-        gap: 4px;
       }
 
-      .popup-tab {
-        padding: 6px 12px;
-        background-color: #30363d;
-        border: none;
-        border-radius: 4px;
-        color: #7d8590;
-        font-size: 12px;
+      .nav-menu {
+        background-color: #ffffff;
+        border-radius: 16px;
+        padding: 40px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        width: 90%;
+      }
+
+      .nav-header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .nav-header h2 {
+        font-size: 32px;
+        font-weight: 600;
+        color: #333333;
+        margin-bottom: 8px;
+      }
+
+      .nav-header p {
+        font-size: 16px;
+        color: #666666;
+      }
+
+      .nav-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+      }
+
+      .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 24px;
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
         cursor: pointer;
         transition: all 0.2s ease;
+        text-decoration: none;
+        color: inherit;
       }
 
-      .popup-tab.active {
-        background-color: #1f6feb;
-        color: #ffffff;
+      .nav-item:hover {
+        background-color: #f8f8f8;
+        border-color: #333333;
+        transform: translateY(-2px);
       }
 
-      .close-btn {
-        font-size: 18px;
-        color: #7d8590;
-        cursor: pointer;
-        background: none;
-        border: none;
-        padding: 4px;
-        line-height: 1;
+      .nav-item-icon {
+        font-size: 32px;
+        margin-bottom: 12px;
       }
 
-      .close-btn:hover {
-        color: #f0f6fc;
-      }
-
-      .popup-content {
-        flex: 1;
-        overflow: hidden;
-        position: relative;
-      }
-
-      .live-content {
-        display: none;
-        height: 100%;
-        padding: 16px 20px;
-        overflow-y: auto;
-      }
-
-      .live-content.active {
-        display: block;
-      }
-
-      .console-content {
-        font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
-        font-size: 12px;
-        line-height: 1.4;
-        color: #e6edf3;
-        background-color: #0d1117;
-        padding: 12px;
-        border-radius: 6px;
-        height: 100%;
-        overflow-y: auto;
-        white-space: pre-wrap;
-      }
-
-      .action-log {
-        height: 100%;
-        overflow-y: auto;
-      }
-
-      .action-item {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 8px 0;
-        border-bottom: 1px solid #21262d;
-        font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
-        font-size: 12px;
-      }
-
-      .action-time {
-        color: #7d8590;
-        min-width: 60px;
-      }
-
-      .action-type {
-        color: #1f6feb;
+      .nav-item-title {
+        font-size: 16px;
         font-weight: 600;
-        min-width: 60px;
+        color: #333333;
+        margin-bottom: 4px;
       }
 
-      .action-target {
-        color: #f0f6fc;
-        flex: 1;
+      .nav-item-desc {
+        font-size: 12px;
+        color: #666666;
+        text-align: center;
       }
 
-      .popup-footer {
-        padding: 12px 20px;
-        border-top: 1px solid #30363d;
-        background-color: #21262d;
-        border-radius: 0 0 8px 8px;
-      }
-
-      .status-indicators {
-        display: flex;
-        gap: 16px;
-      }
-
-      .status-item {
+      .nav-close {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        border: none;
+        background: none;
+        font-size: 24px;
+        color: #666666;
+        cursor: pointer;
+        border-radius: 50%;
         display: flex;
         align-items: center;
-        gap: 6px;
-        font-size: 12px;
-        color: #7d8590;
+        justify-content: center;
+        transition: background-color 0.2s ease;
       }
 
-      .status-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-      }
-
-      .python-status {
-        background-color: #238636;
-      }
-
-      .chrome-status {
-        background-color: #1f6feb;
-      }
-
-      /* Loading Container */
-      .loading-container {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-        z-index: 1000;
-      }
-
-      .loading-container h3 {
-        color: #f0f6fc;
-        margin-bottom: 20px;
-      }
-
-      .loading-bar {
-        width: 300px;
-        height: 6px;
-        background-color: #21262d;
-        border-radius: 3px;
-        overflow: hidden;
-      }
-
-      .loading-progress {
-        height: 100%;
-        background-color: #1f6feb;
-        width: 0%;
-        transition: width 0.3s ease;
-      }
-
-      /* Hide loading when not needed */
-      body:not(.loading) .loading-container {
-        display: none;
+      .nav-close:hover {
+        background-color: #f0f0f0;
       }
 
       /* Responsive Design */
       @media (max-width: 768px) {
-        .sidebar {
-          width: 200px;
+        .welcome-title {
+          font-size: 36px;
         }
         
-        .live-view-popup {
-          width: calc(100vw - 40px);
-          left: 20px;
-          right: 20px;
+        .welcome-subtitle {
+          font-size: 16px;
         }
         
-        .dashboard-grid {
-          grid-template-columns: 1fr;
+        .brand h1 {
+          font-size: 24px;
+        }
+        
+        .nav-menu {
+          padding: 20px;
+        }
+        
+        .nav-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .input-section {
+          bottom: 40px;
         }
       }
 
-      /* Console output styles for backwards compatibility */
-      .console-output .stderr {
-        color: #ff7043;
-      }
-      .console-output .info {
-        color: #4fc3f7;
-      }
-      .console-output .error {
-        color: #f44336;
-      }
-      .console-output .stdout {
-        color: #e6edf3;
+      @media (max-width: 480px) {
+        .nav-grid {
+          grid-template-columns: 1fr;
+        }
+        
+        .welcome-title {
+          font-size: 28px;
+        }
+        
+        .logo {
+          width: 100px;
+          height: 100px;
+        }
+        
+        .logo-icon {
+          font-size: 40px;
+        }
       }
     </style>
   </head>
   <body class="loading">
     <div id="app-layout" class="app-layout">
-      <!-- Sidebar Navigation -->
-      <aside id="sidebar" class="sidebar">
-        <div class="sidebar-header">
-          <h1>Browser-Use Desktop</h1>
+      <!-- Header -->
+      <div class="header">
+        <div class="brand">
+          <h1>Noshi</h1>
+          <p>Natural Action Agent Vessel</p>
         </div>
-        <nav class="sidebar-nav">
-          <button id="nav-home" class="nav-button active" data-tab="home">
-            <span class="nav-icon">🏠</span>
-            Home
-          </button>
-          <button id="nav-agent" class="nav-button" data-tab="agent">
-            <span class="nav-icon">🤖</span>
-            Agent Config
-          </button>
-          <button id="nav-browser" class="nav-button" data-tab="browser">
-            <span class="nav-icon">🌐</span>
-            Browser
-          </button>
-          <button id="nav-recording" class="nav-button" data-tab="recording">
-            <span class="nav-icon">📹</span>
-            Recording
-          </button>
-          <button id="nav-history" class="nav-button" data-tab="history">
-            <span class="nav-icon">📜</span>
-            History
-          </button>
-          <button id="nav-tools" class="nav-button" data-tab="tools">
-            <span class="nav-icon">🔧</span>
-            Tools
-          </button>
-        </nav>
-      </aside>
+        <div class="status">
+          <span class="status-dot"></span>
+          Disconnected
+        </div>
+      </div>
 
-      <!-- Main Content Area -->
-      <main id="main-content" class="main-content">
-        <!-- Loading Screen -->
-        <div id="loading-container" class="loading-container">
-          <h3>Starting Python web server...</h3>
-          <div class="loading-bar">
-            <div id="loading-progress" class="loading-progress"></div>
-          </div>
+      <!-- Home Button for Navigation -->
+      <button id="home-btn" class="nav-close" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background-color: #f5f5f5; border: 1px solid #e0e0e0; color: #333333; z-index: 200;">
+        ⚙️
+      </button>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- Logo -->
+        <div class="logo">
+          <div class="logo-icon">⭐</div>
         </div>
 
-        <!-- Tab Content Containers -->
-        <div id="tab-home" class="tab-content active">
-          <div class="tab-header">
-            <h2>Home Dashboard</h2>
-            <p>Welcome to Browser-Use Desktop. Configure your agent and start automating.</p>
-          </div>
-          <div class="dashboard-grid">
-            <div class="dashboard-card">
-              <h3>Quick Start</h3>
-              <p>Get started with basic browser automation</p>
-              <button class="btn-primary">Start Agent</button>
-            </div>
-            <div class="dashboard-card">
-              <h3>Recent Sessions</h3>
-              <p>View your recent automation sessions</p>
-              <div class="session-list">
-                <div class="session-item">No recent sessions</div>
-              </div>
-            </div>
-          </div>
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+          <h2 class="welcome-title">Welcome to Noshi</h2>
+          <p class="welcome-subtitle">So, what do "you" need to do today?</p>
         </div>
 
-        <div id="tab-agent" class="tab-content">
-          <div class="tab-header">
-            <h2>Agent Configuration</h2>
-            <p>Configure your AI agent settings</p>
-          </div>
-          <div class="settings-section">
-            <div class="setting-group">
-              <label for="llm-model">LLM Model</label>
-              <select id="llm-model" class="setting-select">
-                <option value="gpt-4">GPT-4</option>
-                <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-                <option value="claude-3">Claude 3</option>
-                <option value="llama-2">Llama 2</option>
-              </select>
-            </div>
-            <div class="setting-group">
-              <label for="temperature">Temperature</label>
-              <input type="range" id="temperature" class="setting-slider" min="0" max="1" step="0.1" value="0.7">
-              <span class="slider-value">0.7</span>
-            </div>
-            <div class="setting-group">
-              <label for="max-tokens">Max Tokens</label>
-              <input type="number" id="max-tokens" class="setting-input" value="2048" min="100" max="4096">
-            </div>
-            <div class="setting-group">
-              <label for="timeout">Action Timeout (seconds)</label>
-              <input type="number" id="timeout" class="setting-input" value="30" min="5" max="300">
-            </div>
+        <!-- Input Section -->
+        <div class="input-section">
+          <div class="input-container">
+            <input 
+              type="text" 
+              class="main-input" 
+              placeholder="Type your command or ask me anything..."
+              id="main-input"
+            />
+            <button class="submit-button" id="submit-btn">
+              →
+            </button>
           </div>
         </div>
-
-        <div id="tab-browser" class="tab-content">
-          <div class="tab-header">
-            <h2>Browser Settings</h2>
-            <p>Configure browser behavior and preferences</p>
-          </div>
-          <div class="settings-section">
-            <div class="setting-group">
-              <label for="headless">Headless Mode</label>
-              <input type="checkbox" id="headless" class="setting-checkbox">
-              <span class="checkbox-label">Run browser in background</span>
-            </div>
-            <div class="setting-group">
-              <label for="window-size">Window Size</label>
-              <select id="window-size" class="setting-select">
-                <option value="1920x1080">1920x1080</option>
-                <option value="1366x768">1366x768</option>
-                <option value="1280x720">1280x720</option>
-                <option value="custom">Custom</option>
-              </select>
-            </div>
-            <div class="setting-group">
-              <label for="user-agent">User Agent</label>
-              <input type="text" id="user-agent" class="setting-input" placeholder="Default browser user agent">
-            </div>
-            <div class="setting-group">
-              <label for="incognito">Incognito Mode</label>
-              <input type="checkbox" id="incognito" class="setting-checkbox">
-              <span class="checkbox-label">Use private browsing</span>
-            </div>
-          </div>
-        </div>
-
-        <div id="tab-recording" class="tab-content">
-          <div class="tab-header">
-            <h2>Recording & Traces</h2>
-            <p>Configure session recording and debugging traces</p>
-          </div>
-          <div class="settings-section">
-            <div class="setting-group">
-              <label for="enable-recording">Enable Recording</label>
-              <input type="checkbox" id="enable-recording" class="setting-checkbox" checked>
-              <span class="checkbox-label">Record browser sessions</span>
-            </div>
-            <div class="setting-group">
-              <label for="screenshot-interval">Screenshot Interval (ms)</label>
-              <input type="number" id="screenshot-interval" class="setting-input" value="1000" min="100" max="10000">
-            </div>
-            <div class="setting-group">
-              <label for="video-quality">Video Quality</label>
-              <select id="video-quality" class="setting-select">
-                <option value="high">High</option>
-                <option value="medium">Medium</option>
-                <option value="low">Low</option>
-              </select>
-            </div>
-            <div class="setting-group">
-              <label for="trace-level">Trace Level</label>
-              <select id="trace-level" class="setting-select">
-                <option value="verbose">Verbose</option>
-                <option value="info">Info</option>
-                <option value="warn">Warning</option>
-                <option value="error">Error</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div id="tab-history" class="tab-content">
-          <div class="tab-header">
-            <h2>Session History</h2>
-            <p>View and manage your automation session history</p>
-          </div>
-          <div class="history-section">
-            <div class="history-filters">
-              <input type="date" id="date-filter" class="setting-input">
-              <select id="status-filter" class="setting-select">
-                <option value="all">All Sessions</option>
-                <option value="completed">Completed</option>
-                <option value="failed">Failed</option>
-                <option value="running">Running</option>
-              </select>
-              <button class="btn-secondary">Clear History</button>
-            </div>
-            <div class="history-list">
-              <div class="history-item">
-                <div class="history-status completed">✓</div>
-                <div class="history-details">
-                  <div class="history-title">Sample automation task</div>
-                  <div class="history-meta">2024-03-15 14:30 - 2 minutes</div>
-                </div>
-                <div class="history-actions">
-                  <button class="btn-small">View</button>
-                  <button class="btn-small">Replay</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div id="tab-tools" class="tab-content">
-          <div class="tab-header">
-            <h2>Developer Tools</h2>
-            <p>Advanced debugging and development tools</p>
-          </div>
-          <div class="settings-section">
-            <div class="setting-group">
-              <label for="debug-mode">Debug Mode</label>
-              <input type="checkbox" id="debug-mode" class="setting-checkbox">
-              <span class="checkbox-label">Enable detailed logging</span>
-            </div>
-            <div class="setting-group">
-              <label for="step-by-step">Step-by-Step Mode</label>
-              <input type="checkbox" id="step-by-step" class="setting-checkbox">
-              <span class="checkbox-label">Pause between actions</span>
-            </div>
-            <div class="setting-group">
-              <label for="api-endpoint">API Endpoint</label>
-              <input type="url" id="api-endpoint" class="setting-input" placeholder="http://localhost:7788">
-            </div>
-            <div class="tools-actions">
-              <button class="btn-secondary">Export Settings</button>
-              <button class="btn-secondary">Import Settings</button>
-              <button class="btn-secondary">Reset to Defaults</button>
-            </div>
-          </div>
-        </div>
-      </main>
-    </div>
-      
-      <div id="console-output" class="console-output">
-        <div class="console-header">
-          <h3>Console Output</h3>
-          <div class="console-tabs">
-            <button id="tab-python" class="console-tab active">Python</button>
-            <button id="tab-chrome" class="console-tab">Chrome</button>
-          </div>
-          <span id="close-console" class="close-btn">×</span>
-        </div>
-        <div id="console-actions">
-          <div class="action-row">
-            <button id="restart-python" class="restart-btn">Restart Python</button>
-            <div id="python-command" class="command-display"></div>
-          </div>
-          <div class="action-row" style="display: none;">
-            <button id="restart-chrome" class="restart-btn">Restart Chrome</button>
-            <div id="chrome-command" class="command-display"></div>
-          </div>
-        </div>
-
-        <!-- Original elements for backwards compatibility -->
-        <div id="console-output" class="console-output" style="display: none;">
-          <div class="console-header">
-            <h3>Console Output</h3>
-            <div class="console-tabs">
-              <button id="tab-python" class="console-tab active">Python</button>
-              <button id="tab-chrome" class="console-tab">Chrome</button>
-            </div>
-            <span id="close-console" class="close-btn">×</span>
-          </div>
-          <div id="console-actions">
-            <div class="action-row">
-              <button id="restart-python" class="restart-btn">Restart Python</button>
-              <div id="python-command" class="command-display"></div>
-            </div>
-            <div class="action-row" style="display: none;">
-              <button id="restart-chrome" class="restart-btn">Restart Chrome</button>
-              <div id="chrome-command" class="command-display"></div>
-            </div>
-          </div>
-          <div id="console-content"></div>
-          <div id="chrome-console-content" class="console-content" style="display: none;"></div>
-        </div>
-        
-        <button id="launch-button" class="launch-button" style="display: none;">Open Web UI</button>
-        
-        <div id="webview-container" class="webview-container" style="display: none;">
-          <webview id="webview" src="about:blank" webpreferences="contextIsolation=yes" allowpopups></webview>
-        </div>
-        
-        <div id="controls" class="controls" style="display: none;">
-          <button id="toggle-console">Show Console</button>
-        </div>
-      </main>
+      </div>
     </div>
 
-    <!-- Live View Popup Button -->
+    <!-- Live View Button -->
     <button id="live-view-btn" class="live-view-button">
-      <span class="live-indicator"></span>
-      Live View
+      Show Live Screen
     </button>
 
-    <!-- Live View Popup -->
-    <div id="live-view-popup" class="live-view-popup">
-      <div class="popup-header">
-        <h3>Live Agent View</h3>
-        <div class="popup-tabs">
-          <button id="live-tab-python" class="popup-tab active">Python</button>
-          <button id="live-tab-chrome" class="popup-tab">Chrome</button>
-          <button id="live-tab-actions" class="popup-tab">Actions</button>
+    <!-- Navigation Overlay -->
+    <div id="nav-overlay" class="nav-overlay">
+      <div class="nav-menu">
+        <button class="nav-close" id="nav-close">×</button>
+        <div class="nav-header">
+          <h2>Noshi Navigation</h2>
+          <p>Choose a section to configure</p>
         </div>
-        <button id="close-live-view" class="close-btn">×</button>
-      </div>
-      <div class="popup-content">
-        <div id="live-python-content" class="live-content active">
-          <div id="live-console-content" class="console-content"></div>
-        </div>
-        <div id="live-chrome-content" class="live-content">
-          <div id="live-chrome-console-content" class="console-content"></div>
-        </div>
-        <div id="live-actions-content" class="live-content">
-          <div class="action-log">
-            <div class="action-item">
-              <span class="action-time">14:30:15</span>
-              <span class="action-type">CLICK</span>
-              <span class="action-target">button[Submit]</span>
-            </div>
-            <div class="action-item">
-              <span class="action-time">14:30:12</span>
-              <span class="action-type">TYPE</span>
-              <span class="action-target">input[email]</span>
-            </div>
+        <div class="nav-grid">
+          <div class="nav-item" data-section="chat">
+            <div class="nav-item-icon">💬</div>
+            <div class="nav-item-title">Chat & Home</div>
+            <div class="nav-item-desc">Primary interface</div>
           </div>
-        </div>
-      </div>
-      <div class="popup-footer">
-        <div class="status-indicators">
-          <span class="status-item">
-            <span class="status-dot python-status"></span>
-            Python: Ready
-          </span>
-          <span class="status-item">
-            <span class="status-dot chrome-status"></span>
-            Chrome: Connected
-          </span>
+          <div class="nav-item" data-section="agent">
+            <div class="nav-item-icon">🤖</div>
+            <div class="nav-item-title">Agent Config</div>
+            <div class="nav-item-desc">AI settings</div>
+          </div>
+          <div class="nav-item" data-section="browser">
+            <div class="nav-item-icon">🌐</div>
+            <div class="nav-item-title">Browser</div>
+            <div class="nav-item-desc">Browser settings</div>
+          </div>
+          <div class="nav-item" data-section="recording">
+            <div class="nav-item-icon">📹</div>
+            <div class="nav-item-title">Recording</div>
+            <div class="nav-item-desc">Session recording</div>
+          </div>
+          <div class="nav-item" data-section="history">
+            <div class="nav-item-icon">📜</div>
+            <div class="nav-item-title">History</div>
+            <div class="nav-item-desc">Task history</div>
+          </div>
+          <div class="nav-item" data-section="tools">
+            <div class="nav-item-icon">🔧</div>
+            <div class="nav-item-title">Tools</div>
+            <div class="nav-item-desc">Developer tools</div>
+          </div>
         </div>
       </div>
     </div>
