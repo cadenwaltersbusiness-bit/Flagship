@@ -67,7 +67,7 @@ const createWindow = () => {
     y: 0,
     frame: false, // Remove window frame
     titleBarStyle: 'hidden', // Hide title bar on macOS
-    backgroundColor: '#000000', // Set black background
+    backgroundColor: '#ffffff', // Set white background
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -78,15 +78,15 @@ const createWindow = () => {
     },
   });
 
-  // Set up dark mode
+  // Set up light mode
   mainWindow.webContents.on('did-finish-load', () => {
     mainWindow.webContents.insertCSS(`
       body {
-        background-color: #000000;
-        color: #ffffff;
+        background-color: #ffffff;
+        color: #333333;
       }
       * {
-        color-scheme: dark;
+        color-scheme: light;
       }
     `);
   });
